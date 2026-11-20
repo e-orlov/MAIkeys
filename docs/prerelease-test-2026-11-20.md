@@ -122,3 +122,7 @@ Quality notes (not language errors): Vietnamese kept the German word "kapseln" i
 ## Changes after the test: help popovers
 
 Each field of Input and Advanced got an "i" icon with an English help text (Bootstrap popover, texts in `public/js/help.js`). Browser test: 16 icons are placed, 12 are visible with the default service and 3 more appear with "google ads ideas"; the model picker icon stays hidden while only one Groq model is configured. Every popover opens at its icon, fits into the window at 1280 x 800 and at 375 px width, closes on a second click, on a click elsewhere and on Escape, and no more than one is open at a time. A click on the icon neither toggles "Continuous running" nor focuses a field. No horizontal scroll at 375 px.
+
+## Changes after the test: "brand filter" export column
+
+The Google concept type column (BRAND, OTHER_BRANDS, NON_BRAND, -) is no longer in the table or in Column visibility. It exists only in exports, under the name "brand filter", between the concept columns and the 48-month series. Browser test with real Google Ads data (117 rows, 6 concept requests): the table showed no such column, the Column visibility menu did not list it, and a saved table state that had the column visible was overridden at load. The exported CSV had the header "brand filter" and the values BRAND (6), NON_BRAND (8), OTHER_BRANDS (1) and "-" (5, as a type of a concept group without type); multiple concepts of one row are separated by " | ".

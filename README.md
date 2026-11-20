@@ -163,7 +163,7 @@ The browser keeps these in its local storage and restores them after a reload: s
 
 ## 4. The results table
 
-The table has 20 columns. Only Keyword is visible at first. Volume, CPC and Competition appear when volume data arrives, Question when a question arrives, the three concept columns when concepts arrive. Everything else can be switched on in Column visibility.
+The table has 20 columns. Two of them ("brand filter" and the monthly series) exist only in exports. Only Keyword is visible at first. Volume, CPC and Competition appear when volume data arrives, Question when a question arrives, the two concept columns when concepts arrive. Everything else can be switched on in Column visibility.
 
 | Column | Content |
 |---|---|
@@ -181,8 +181,9 @@ The table has 20 columns. Only Keyword is visible at first. Volume, CPC and Comp
 | Domain | The source of the suggestion (the suggest server address). |
 | Words | Number of words. |
 | Question | The question for the keyword, in the language chosen under Language (chapter 8.1). |
-| Concepts (Google), Concept groups (Google), Concept group types | Google's keyword concepts (chapter 7.3). The three cells of a row list their values in the same order, separated by ` | `. |
-| Monthly volume (48 mo, oldest first) | Comma separated monthly searches. It cannot be switched on in the table. It is always the last column of an export. |
+| Concepts (Google), Concept groups (Google) | Google's keyword concepts (chapter 7.3). The two cells of a row list their values in the same order, separated by ` | `. |
+| brand filter | Export only, it is neither in the table nor in Column visibility. For every concept of the row it names the type of its concept group, in the same order as the concepts, separated by ` | `: `BRAND` = brand of the seed keyword, `OTHER_BRANDS`, `NON_BRAND`, `-` = no type. Empty when no concepts were fetched. It has nothing to do with the brand filter of Classify brands. |
+| Monthly volume (48 mo, oldest first) | Comma separated monthly searches. It cannot be switched on in the table. It is always the last column of an export, after "brand filter". |
 
 Volume 0 or empty metrics mean that Keyword Planner has no data for the keyword, not that the lookup failed.
 
@@ -226,7 +227,7 @@ Button Export in the table toolbar:
 What an export contains:
 
 - Only the rows that are shown: Include/Exclude, the brand filter and the Search box apply, in the current sort order, all pages.
-- Every column ticked in Column visibility, in table order, followed by the 48-month series. The series is included even though it cannot be ticked.
+- Every column ticked in Column visibility, in table order, followed by the export-only columns "brand filter" and the 48-month series. They are included even though they cannot be ticked.
 - New lines inside a cell become spaces. HTML entities are decoded. Growth values carry a plus sign.
 
 File name: `<seed>-<yyyymmddHHmmss>.csv`. The seed is the first seed keyword of the last run (the first line of Input if no run has happened), lower case, with `ä ö ü ß` written as `ae oe ue ss` and everything else that is not a letter or digit turned into `-`, cut to 60 characters. Without a seed the name starts with `keywords`.

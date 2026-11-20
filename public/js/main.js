@@ -26,8 +26,8 @@ var KWS = function(){
 
         exportColumns: function(withSeries){
             var idx = [];
-            this.table.columns().every(function(i){ if (i !== 16 && this.visible()) idx.push(i); });
-            if (withSeries) idx.push(16);
+            this.table.columns().every(function(i){ if (i !== 16 && i !== 19 && this.visible()) idx.push(i); });
+            if (withSeries) { idx.push(19); idx.push(16); }
             return idx;
         },
         lastSeed: null,
@@ -943,7 +943,7 @@ var KWS = function(){
         },
         showConceptColumns: function(){
             var t = this.table;
-            ['conceptNames', 'conceptGroups', 'conceptTypes'].forEach(function(n){ t.column(n + ':name').visible(true); });
+            ['conceptNames', 'conceptGroups'].forEach(function(n){ t.column(n + ':name').visible(true); });
         },
         applyConcepts: function(map){
             var self = this, any = false;
@@ -1269,14 +1269,14 @@ var KWS = function(){
                 "<'mai-tablewrap'tr>" +
                 "<'mai-tablefoot'<'mai-tablefoot__info'i><'mai-tablefoot__pager'p>>",
                 buttons: [
-                    { extend: 'colvis', columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19] },
+                    { extend: 'colvis', columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18] },
                     'pageLength',
                     {
                          extend: 'collection',
                          text: 'Export',
                          buttons: [
-                             { extend: 'copyHtml5', action: exportAction('copy', true), exportOptions: { columns: [':visible', 'trend:name'], decodeEntities: true } },
-                             { extend: 'csvHtml5', action: exportAction('csv', true), exportOptions: { columns: [':visible', 'trend:name'], decodeEntities: true } },
+                             { extend: 'copyHtml5', action: exportAction('copy', true), exportOptions: { columns: [':visible', 'conceptTypes:name', 'trend:name'], decodeEntities: true } },
+                             { extend: 'csvHtml5', action: exportAction('csv', true), exportOptions: { columns: [':visible', 'conceptTypes:name', 'trend:name'], decodeEntities: true } },
                              {
                                  extend: 'csvHtml5', action: csvAction,
                                  fieldBoundary: "",
@@ -1444,8 +1444,8 @@ var KWS = function(){
                     "visible": false
                 }, {
                     "name": "conceptTypes",
-                    "className": "mai-col-c",
-                    "title": "Concept group types (BRAND = brand of the seed keyword, OTHER_BRANDS, NON_BRAND, - = none)",
+                    "className": "export-only",
+                    "title": "brand filter",
                     "data": "conceptTypes",
                     "render": escRender,
                     "targets": 19,
@@ -1456,6 +1456,7 @@ var KWS = function(){
                 stateSave: true,
                 "bDeferRender": true,
             });
+            this.table.column('conceptTypes:name').visible(false, false);
 
             $.fn.dataTable.ext.search.push(function(settings, data, dataIndex, rowData){
                 if (settings.nTable.id !== 'outtable') return true;
