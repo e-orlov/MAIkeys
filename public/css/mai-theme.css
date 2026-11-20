@@ -251,3 +251,7 @@ html body table#outtable.dataTable tbody td.mai-col-c { min-width: 200px; }
 .popover.mai-popover.bottom > .arrow:after { border-bottom-color: #184036; }
 .popover.mai-popover.left > .arrow:after { border-left-color: #184036; }
 .popover.mai-popover.right > .arrow:after { border-right-color: #184036; }
+
+@keyframes mai-slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(340%); } }
+.progressjs-inner.mai-indeterminate { width: 30% !important; transition: none !important; animation: mai-slide 1.6s linear infinite; }
+.progressjs-container > .progressjs-progress { overflow: hidden; }

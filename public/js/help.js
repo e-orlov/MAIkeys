@@ -72,7 +72,7 @@
             html: '<p><b>Off</b> (default): one pass over the queue, then the run ends.</p>' +
                 '<p><b>On</b>: for the suggest services, the keywords found are queried again as new seeds, round after round, until you press "Stop doing".</p>' +
                 '<p>For "google ads ideas", the ideas found become the seeds of the next round. Max rounds, stop-at and min. volume below limit this.</p>' +
-                '<p>The table can grow very fast with this option on.</p>'
+                '<p>The table and the queue can grow very fast with this option on. The total is unknown, so the line under the header slides instead of filling up, and the label above the seeds shows the round and the position in it.</p>'
         },
         'ideas-max-rounds': {
             title: 'Ads ideas: max rounds',

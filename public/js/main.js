@@ -15,6 +15,8 @@ var KWS = function(){
         generation: 0,
         ideasMode: false,
         progressActive: false,
+        suggestRound: 1,
+        continuing: false,
         round: 1,
         ideaRows: {},
 
@@ -49,6 +51,8 @@ var KWS = function(){
                 return;
             }
             if (this.doWork === false) {
+                if (!this.continuing) this.suggestRound = 1;
+                this.continuing = false;
                 this.saveSettings();
                 $('#startjob').val('Stop Job').text('Stop doing').addClass('btn-danger');
                 this.hashMapInputs = {};
@@ -99,6 +103,17 @@ var KWS = function(){
             }
         },
 
+        setProgress: function(percent){
+            if (!this.progressActive) return;
+            var inner = document.querySelector('.progressjs-inner');
+            if (this.options && this.options.keepRunning) {
+                if (inner) inner.classList.add('mai-indeterminate');
+                return;
+            }
+            if (inner) inner.classList.remove('mai-indeterminate');
+            this.progress1.set(percent);
+        },
+
         StopWork: function(keepProgress){
             if (this.doWork){
                 $('#startjob').val('Start Job').text('Start doing').removeClass('btn-danger');
@@ -125,13 +140,15 @@ var KWS = function(){
                     }
 
                     var prog = parseInt(this.keywordsToQueryIndex/this.numOfInitialKeywords*100);
-                    if (this.progressActive) this.progress1.set(prog);
+                    this.setProgress(prog);
                     this.FilterAndDisplay();
 
                 } else {
                     if (this.options.keepRunning) {
                         console.log('finish initial queue');
                         this.StopWork(true);
+                        this.continuing = true;
+                        this.suggestRound++;
                         this.StartWork();
                     } else {
                         console.log('finish initial queue');
@@ -181,7 +198,7 @@ var KWS = function(){
             }
             if (batch.length) {
                 this.QueryIdeas(batch, idxs);
-                if (this.progressActive) this.progress1.set(parseInt(this.keywordsToQueryIndex/this.numOfInitialKeywords*100));
+                this.setProgress(parseInt(this.keywordsToQueryIndex/this.numOfInitialKeywords*100));
                 this.FilterAndDisplay();
                 return;
             }
@@ -1072,7 +1089,10 @@ var KWS = function(){
             }
             if (outputKeywords.length>this.options.maxQueueDisplay) sb+='...\n';
             $("#input").val(sb);
-            $("#numofkeywords").html('Queue:' + outputKeywords.length);
+            var roundInfo = (this.doWork && this.options && this.options.keepRunning && !this.ideasMode)
+                ? ' &middot; round ' + this.suggestRound + ', query ' + this.keywordsToQueryIndex + ' of ' + this.numOfInitialKeywords + ' in this round'
+                : '';
+            $("#numofkeywords").html('Queue:' + outputKeywords.length + roundInfo);
         },
 
 
