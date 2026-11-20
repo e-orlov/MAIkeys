@@ -2,7 +2,17 @@
 
 A bulk keyword research tool. It collects long-tail keywords from Google Suggest and similar services, adds search data from the Google Ads API (volume, CPC, competition, trend, keyword concepts), and uses an LLM on Groq Cloud to turn keywords into questions and to tell brand keywords from non-brand ones. Everything ends up in one sortable table that you can filter and export.
 
-This is an extension of [wassname/keywordshitter2](https://github.com/wassname/keywordshitter2), which is an update of the original keywordshitter.com. The German defaults (country `de`, language `de`, German prefixes and suffixes) and the Google Ads, Groq and notice features are additions made for this project.
+MAIkeys grew out of [wassname/keywordshitter2](https://github.com/wassname/keywordshitter2), which is an update of the original keywordshitter.com. The core idea comes from there: send a seed keyword, combined with many prefixes and suffixes, to the suggest services of search engines and collect the answers. Almost everything around that core was added in this project:
+
+- **A local Node server** (`server.js`, `questions.js`) with its own HTTP API. The Google Ads and Groq keys stay on the server and never reach the browser.
+- **Google Ads data.** Search volume, CPC, competition, 48 months of history and the change percentages for every keyword, the "google ads ideas" service that expands seeds in rounds, and Google's keyword concepts.
+- **Groq language model.** Questions in any of 37 languages, chosen in Advanced, and a brand classification with a three-state brand filter.
+- **One table you can work with.** Include and Exclude filters, the brand filter, column choice, sorting, and a CSV export of exactly the rows you see, with the file name `<seed>-<time stamp>.csv`.
+- **Notices for every failure.** Missing keys, quotas, rate limits, network and server problems each show a box with the cause, the expected duration and what to do next.
+- **A new interface.** A dark theme after the design of mai.mediaworx.com, an "i" help text for every field, and a progress line that also makes sense with Continuous running.
+- **German defaults.** Country `de`, language `de`, and German prefixes and suffixes.
+- **Cleanup.** Eleven suggest services that no longer answered were removed, and the old development packages and build scripts are gone: the only dependency is `groq-sdk`.
+- **Documentation and tests.** This README with 15 chapters, and test reports in `docs/` from runs with real Google Ads and Groq keys.
 
 ## Contents
 
