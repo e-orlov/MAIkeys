@@ -104,6 +104,10 @@ The file `.env` sits next to `server.js` and is not committed. Values set in the
 | Status lines | Short grey lines for volume, concepts, questions and brands. |
 | Errors box (collapsed) | Appears after the first Groq problem. Lists every Groq error of the session. "Copy log" copies it. The same lines go to `logs/questions-errors.log`. |
 
+### Help icons
+
+Next to every field of Input and Advanced there is a small round "i" icon: Seeds, the model picker (when it is shown), Brand filter, Brand, Include, Exclude, Concepts max requests, Service, Prefixes, Suffixes, Continuous running, the three "Ads ideas" fields (shown with the service "google ads ideas"), Country and Language. A click opens a short help text in English next to the icon: what the field does, the input format, the default and the pitfalls. A second click on the icon, a click anywhere else or the Escape key closes it. The texts are Bootstrap popovers and live in `public/js/help.js`, one entry per field, so they are easy to edit. The buttons and the table controls have no icon.
+
 The header has links to Input, Results and About (the About text sits in the footer at the bottom of the page), and an Export button that jumps to the table and opens the export menu. It stays at the top while you scroll, and the thin lime line under it is the progress bar of a running collection.
 
 The "Get ..." and "Generate ..." buttons work on the rows that are shown after Include/Exclude, the brand filter and the search box. "Classify brands" uses Include/Exclude only (chapter 8.2).
@@ -472,7 +476,8 @@ Status lines worth knowing: "Nothing to look up (all filtered rows already have 
 |---|---|
 | `server.js` | The local server: static files, Google Ads calls and the Groq endpoints. No dependencies besides Node. |
 | `questions.js` | Groq client: prompts, ID scheme, retries, pacing, counters, error log. |
-| `public/` | The page (`index.html`, `js/main.js`, `js/suggestions.js`, styles). |
+| `public/` | The page (`index.html`, `js/main.js`, `js/suggestions.js`, `js/help.js`, styles). |
+| `public/js/help.js` | The texts of the "i" help popovers, one entry per field, and the code that adds the icons. |
 | `public/css/mai-theme.css` | The dark theme (colors, type, buttons, cards, table, notices). It loads after `css/style.css` and only restyles classes; change the tokens at the top of the file to change the look. |
 | `LICENSE` | The MIT licence text. |
 | `package.json`, `package-lock.json` | The package `maikeys` with its single dependency `groq-sdk` and the start scripts. |

@@ -63,24 +63,24 @@
                     <div id="numofkeywords"></div>
                     <div class="form-group">
                         <label for="input">Seeds</label>
-                        <textarea id="input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" rows="8" title="queue" class="form-control"></textarea>
+                        <textarea id="input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" rows="8" class="form-control"></textarea>
                     </div>
 
                     <div class="mai-toolbar" aria-label="Data actions">
                         <button class="btn btn-default btn-sm" id="getvolume" type="button" title="Google Ads Keyword Planner volume for the rows currently shown (needs the Node backend: npm start)">Get search volume</button>
                         <button class="btn btn-default btn-sm" id="getconcepts" type="button" title="Google Ads keyword concepts (name, group, brand type) for the rows currently shown. Google returns concepts only for single-seed requests, so this takes several requests (limit under Advanced).">Get concepts</button>
                         <button class="btn btn-default btn-sm" id="getquestions" type="button" title="Turn the keywords currently shown (2+ words, no question yet) into natural questions in the language chosen under Language (Advanced) with a Groq model (needs GROQ_API_KEY in .env)">Generate questions</button>
-                        <select id="questions-model" class="form-control" title="Groq model used for the questions"></select>
+                        <select id="questions-model" class="form-control"></select>
                     </div>
                     <div id="brand-box">
                         <div class="mai-brandbar">
                             <label for="brand-filter">Brand filter</label>
-                            <select id="brand-filter" class="form-control" title="Needs the brand classes (0/1/2) from 'Classify brands'. Keywords not classified yet are hidden in the two brand states.">
+                            <select id="brand-filter" class="form-control">
                                 <option value="all">All keywords</option>
                                 <option value="nonbrand">Non-brand only</option>
                                 <option value="brand">Only brand: X</option>
                             </select>
-                            <input type="text" id="brand-name" class="form-control" maxlength="80" autocomplete="off" spellcheck="false" aria-label="Brand" placeholder="Brand X" title="The brand X. Class 2 = this brand is mentioned (alone or with other brands); class 1 = only other brands; class 0 = no brand.">
+                            <input type="text" id="brand-name" class="form-control" maxlength="80" autocomplete="off" spellcheck="false" aria-label="Brand" placeholder="Brand X">
                             <button class="btn btn-primary btn-sm" id="getbrands" type="button" title="Ask the Groq model for the brand class of every keyword that passes include/exclude (0 no brand, 1 other brands only, 2 the brand named here). Single words are included. Needs GROQ_API_KEY in .env.">Classify brands</button>
                         </div>
                         <div id="brands-status" class="text-muted"></div>
@@ -130,11 +130,11 @@
 
                     <div class="form-group">
                       <label for="prefixes">Prefixes</label>
-                      <textarea type="text" title="These values are added before words to prompt the search suggestions" class="form-control" name="prefixes" id="prefixes"  >a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,wer,wen,wem,wessen,was,wo,wohin,woher,wann,wie lange,wie oft,seit wann,bis wann,wie,wie viel,wie viele,warum,wieso,weshalb,weswegen,wozu,wofür,welcher,welche,welches,was für ein,was für eine,woran,worauf,woraus,wobei,wodurch,worein,wogegen,wohinter,worin,womit,wonach,worüber,worum,worunter,wovon,wovor,wozwischen</textarea>
+                      <textarea type="text" class="form-control" name="prefixes" id="prefixes"  >a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,wer,wen,wem,wessen,was,wo,wohin,woher,wann,wie lange,wie oft,seit wann,bis wann,wie,wie viel,wie viele,warum,wieso,weshalb,weswegen,wozu,wofür,welcher,welche,welches,was für ein,was für eine,woran,worauf,woraus,wobei,wodurch,worein,wogegen,wohinter,worin,womit,wonach,worüber,worum,worunter,wovon,wovor,wozwischen</textarea>
                     </div>
                     <div class="form-group">
                       <label for="suffixes">Suffixes</label>
-                      <textarea type="text" rows="2" title="These values are added after words to prompt the search suggestions" class="form-control" id="suffixes">a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,kaufen,online,test,preis,vergleich,günstig,ohne,mit,für,in der nähe,wie,ähnlich,gegen,versus,vs,zu,nach,außer,hat</textarea>
+                      <textarea type="text" rows="2" class="form-control" id="suffixes">a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,kaufen,online,test,preis,vergleich,günstig,ohne,mit,für,in der nähe,wie,ähnlich,gegen,versus,vs,zu,nach,außer,hat</textarea>
                     </div>
 
                     <div class="form-group" style="display: none">
@@ -144,7 +144,7 @@
 
                     <div class="checkbox">
                       <label for="keep-running">
-                          <input type="checkbox" id="keep-running" name="keep-running" title="Keep running forever"></input>Continuous running
+                          <input type="checkbox" id="keep-running" name="keep-running"></input>Continuous running
                       </label>
                     </div>
 
@@ -152,22 +152,22 @@
                       <p class="help-block"><strong>Settings for the service "google ads ideas"</strong> (the three fields below). "Continuous running" above works for every service: here it makes the ideas found become the seeds of the next round. Prefixes/suffixes are not used by this service.</p>
                       <div class="form-group">
                         <label for="ideas-max-rounds">Ads ideas: max rounds</label>
-                        <input type="number" min="1" max="10" class="form-control" id="ideas-max-rounds" value="2" title="Round 1 = your seed keywords, round 2 = ideas found in round 1, and so on.">
+                        <input type="number" min="1" max="10" class="form-control" id="ideas-max-rounds" value="2">
                       </div>
                       <div class="form-group">
                         <label for="ideas-max-keywords">Ads ideas: stop at (results)</label>
-                        <input type="number" min="1" class="form-control" id="ideas-max-keywords" value="5000" title="The job stops when the table holds this many results (after include/exclude filters).">
+                        <input type="number" min="1" class="form-control" id="ideas-max-keywords" value="5000">
                       </div>
                       <div class="form-group">
                         <label for="ideas-min-volume">Ads ideas: min. volume for the next round</label>
-                        <input type="number" min="0" class="form-control" id="ideas-min-volume" value="0" title="Ideas below this monthly volume stay in the table but are not expanded further. 0 = expand all.">
+                        <input type="number" min="0" class="form-control" id="ideas-min-volume" value="0">
                       </div>
                     </div>
 
                     <div class="form-group">
                       <label for="country">Country</label>
 
-                      <select value="us"  class="form-control" name="country" id="country" title="Country code. Two letters. Only works for google for now" >
+                      <select value="us"  class="form-control" name="country" id="country" >
                           <option value=""></option>
                           <option value="us">United States (us)</option>
                           <option value="af">Afghanistan (af)</option>
@@ -422,7 +422,7 @@
                     </div>
                     <div class="form-group">
                       <label for="lang">Language</label>
-                      <select class="form-control" title="Lang code. Two letters. Only works for google for now" class="form-control" id="lang" value="en" >
+                      <select class="form-control" class="form-control" id="lang" value="en" >
                           <option value=""></option>
                           <option value="en" >English (default) (en)</option>
                           <option value="ar" >Arabic (ar)</option>
@@ -504,6 +504,7 @@
 
     <script type="text/javascript" src="js/suggestions.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/help.js"></script>
 
     <script>
     $(document).ready(function () {
