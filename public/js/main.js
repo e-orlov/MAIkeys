@@ -346,6 +346,17 @@ var KWS = function(){
             }
             this.table.rows.add(rows);
             if (!dontDisplay && this.table.data().length<this.options.deferTableUpdatesAtRows) this.table.draw(false);
+            else if (!dontDisplay) this.scheduleBrandInfo();
+        },
+
+        brandInfoTimer: null,
+        scheduleBrandInfo: function(){
+            if (this.brandInfoTimer || !this.table) return;
+            var self = this, wait = Math.max(2000, Math.round(this.table.data().length / 50));
+            this.brandInfoTimer = setTimeout(function(){
+                self.brandInfoTimer = null;
+                self.updateBrandInfo();
+            }, wait);
         },
 
         extractDomain: function(url) {
