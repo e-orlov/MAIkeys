@@ -1,0 +1,19 @@
+{
+  "name": "maikeys",
+  "version": "0.0.5",
+  "description": "MAIkeys. Bulk keyword research tool.",
+  "main": "public/js/main.js",
+  "repository": "https://github.com/wassname/keywordshitter2",
+  "scripts": {
+    "start": "node server.js",
+    "production": "NODE_ENV=production npm start"
+  },
+  "author": "blackmia,wassname",
+  "license": "MIT",
+  "dependencies": {
+    "groq-sdk": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

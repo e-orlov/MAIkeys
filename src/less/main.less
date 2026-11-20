@@ -1,0 +1,47 @@
+@import "node_modules/bootstrap/less/bootstrap.less";
+
+@import "src/less/bootstrap/theme.less";
+@import "src/less/bootstrap/variables.less";
+
+.table.dataTable {
+    min-height: 600px;
+}
+.table {
+  > thead,
+  > tbody,
+  > tfoot {
+    > tr {
+      > th,
+      > td {
+        border-top: 0px solid @table-border-color;
+      }
+    }
+  }
+}
+.table-responsive {
+  @media screen and (max-width: @screen-xs-max) {
+    border: 0px solid @table-border-color;
+    }
+}
+
+@brand-danger:         #D9230F;
+@brand-primary:        #D9831F;
+@btn-primary-color:    white;
+@btn-danger-color:    white;
+.btn-primary {
+    font-weight: bold;
+}
+
+@body-bg:               white;
+@text-color:            @gray-base;
+
+@btn-default-color:              black;
+@btn-default-bg:                 #fff;
+
+.pagination {
+    margin: 0px;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    margin: 0px;
+    padding: 0px;
+}
