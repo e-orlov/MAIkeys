@@ -18,6 +18,7 @@
             title: 'Non-brand only',
             html: '<p>When ticked, the table and every export show only keywords that mention no brand at all.</p>' +
                 '<p>The Groq model decides this when you press "Classify brands": it marks each keyword as "no brand" or "mentions a brand" (any brand, yours or a competitor). Keywords that are not classified yet are hidden while the box is ticked, and a line under the button says how many are waiting.</p>' +
+                '<p>The result is also shown as the column "Brand (Groq)" (0 = no brand, 1 = brand), which you can switch on in Column visibility.</p>' +
                 '<p>The box works together with Include, Exclude and the table search. To keep only keywords with one particular brand, use Include instead. Include with a brand name plus this box shows almost nothing, because those keywords are brand keywords.</p>' +
                 '<p>"Classify brands" works only on the rows that pass Include and Exclude when you press it. For the whole table, clear Include and Exclude first, classify, and then set the filters.</p>'
         },

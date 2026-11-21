@@ -27,8 +27,8 @@ var KWS = function(){
 
         exportColumns: function(withSeries){
             var idx = [];
-            this.table.columns().every(function(i){ if (i !== 16 && i !== 19 && this.visible()) idx.push(i); });
-            if (withSeries) { idx.push(19); idx.push(16); }
+            this.table.columns().every(function(i){ if (i !== 16 && this.visible()) idx.push(i); });
+            if (withSeries) idx.push(16);
             return idx;
         },
         lastSeed: null,
@@ -884,7 +884,7 @@ var KWS = function(){
                 var key = self.qKey(d.keyword);
                 if (_.has(map, key)) { d.brand = map[key]; this.data(d); any = true; }
             });
-            if (any) this.table.draw(false);
+            if (any) { this.table.column('brandClass:name').visible(true); this.table.draw(false); }
         },
 
         setNonBrandOnly: function(on){
@@ -972,7 +972,7 @@ var KWS = function(){
         },
         showConceptColumns: function(){
             var t = this.table;
-            ['conceptNames', 'conceptGroups'].forEach(function(n){ t.column(n + ':name').visible(true); });
+            ['conceptNames', 'conceptGroups', 'conceptTypes'].forEach(function(n){ t.column(n + ':name').visible(true); });
         },
         applyConcepts: function(map){
             var self = this, any = false;
@@ -1298,14 +1298,14 @@ var KWS = function(){
                 "<'mai-tablewrap'tr>" +
                 "<'mai-tablefoot'<'mai-tablefoot__info'i><'mai-tablefoot__pager'p>>",
                 buttons: [
-                    { extend: 'colvis', columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18] },
+                    { extend: 'colvis', columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20] },
                     'pageLength',
                     {
                          extend: 'collection',
                          text: 'Export',
                          buttons: [
-                             { extend: 'copyHtml5', action: exportAction('copy', true), exportOptions: { columns: [':visible', 'conceptTypes:name', 'trend:name'], decodeEntities: true } },
-                             { extend: 'csvHtml5', action: exportAction('csv', true), exportOptions: { columns: [':visible', 'conceptTypes:name', 'trend:name'], decodeEntities: true } },
+                             { extend: 'copyHtml5', action: exportAction('copy', true), exportOptions: { columns: [':visible', 'trend:name'], decodeEntities: true } },
+                             { extend: 'csvHtml5', action: exportAction('csv', true), exportOptions: { columns: [':visible', 'trend:name'], decodeEntities: true } },
                              {
                                  extend: 'csvHtml5', action: csvAction,
                                  fieldBoundary: "",
@@ -1473,19 +1473,26 @@ var KWS = function(){
                     "visible": false
                 }, {
                     "name": "conceptTypes",
-                    "className": "export-only",
-                    "title": "brand filter",
+                    "className": "mai-col-c",
+                    "title": "Concept types (Google)",
                     "data": "conceptTypes",
                     "render": escRender,
                     "targets": 19,
                     "visible": false
+                }, {
+                    "name": "brandClass",
+                    "title": "Brand (Groq)",
+                    "data": "brand",
+                    "render": function(d, type){ return (d === null || d === undefined) ? (type === 'display' || type === 'filter' ? '' : -1) : d; },
+                    "targets": 20,
+                    "visible": false,
+                    "type": "num"
                 },
             ],
                 order: [[ 0, 'desc' ]],
                 stateSave: true,
                 "bDeferRender": true,
             });
-            this.table.column('conceptTypes:name').visible(false, false);
 
             $.fn.dataTable.ext.search.push(function(settings, data, dataIndex, rowData){
                 if (settings.nTable.id !== 'outtable') return true;

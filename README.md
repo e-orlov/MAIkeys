@@ -174,7 +174,7 @@ The browser keeps these in its local storage and restores them after a reload: s
 
 ## 4. The results table
 
-The table has 20 columns. Two of them ("brand filter" and the monthly series) exist only in exports. Only Keyword is visible at first. Volume, CPC and Competition appear when volume data arrives, Question when a question arrives, the two concept columns when concepts arrive. Everything else can be switched on in Column visibility.
+The table has 21 columns. One of them (the monthly series) exists only in exports. Only Keyword is visible at first. Volume, CPC and Competition appear when volume data arrives, Question when a question arrives, the three concept columns when concepts arrive, "Brand (Groq)" when brand classes arrive. Everything else can be switched on in Column visibility.
 
 | Column | Content |
 |---|---|
@@ -193,8 +193,9 @@ The table has 20 columns. Two of them ("brand filter" and the monthly series) ex
 | Words | Number of words. |
 | Question | The question for the keyword, in the language chosen under Language (chapter 8.1). |
 | Concepts (Google), Concept groups (Google) | Google's keyword concepts (chapter 7.3). The two cells of a row list their values in the same order, separated by ` | `. |
-| brand filter | Export only, it is neither in the table nor in Column visibility. For every concept of the row it names the type of its concept group, in the same order as the concepts, separated by ` | `: `BRAND` = brand of the seed keyword, `OTHER_BRANDS`, `NON_BRAND`, `-` = no type. Empty when no concepts were fetched. It has nothing to do with the brand filter of Classify brands. |
-| Monthly volume (48 mo, oldest first) | Comma separated monthly searches. It cannot be switched on in the table. It is always the last column of an export, after "brand filter". |
+| Concept types (Google) | The type of each concept group, in the same order as the concepts, separated by ` | `: `BRAND` = brand of the seed keyword, `OTHER_BRANDS`, `NON_BRAND`, `-` = no type. Empty when no concepts were fetched. It is Google's view and has nothing to do with "Brand (Groq)". |
+| Brand (Groq) | The class from "Classify brands": `0` = no brand mentioned, `1` = a brand is mentioned (any brand). Empty when the keyword was not classified yet. Sortable, and part of the export when ticked. The "Non-brand only" checkbox filters by this column. |
+| Monthly volume (48 mo, oldest first) | Comma separated monthly searches. It cannot be switched on in the table. It is always the last column of an export, after the other columns. |
 
 Volume 0 or empty metrics mean that Keyword Planner has no data for the keyword, not that the lookup failed.
 
@@ -214,7 +215,7 @@ Advanced, one term per line, case-insensitive substring match. Include keeps onl
 
 A checkbox next to "Classify brands". When it is ticked, the table and every export show only keywords with brand class 0 (no brand mentioned). When it is not ticked, everything is shown (default).
 
-The classes come from "Classify brands" (chapter 8.2). Keywords without a class are hidden while the box is ticked, and a line under the button says how many are waiting. The checkbox combines with Include and Exclude (all must match). The classes are not shown as a column and are not exported. They only decide which rows are shown and exported.
+The classes come from "Classify brands" (chapter 8.2). Keywords without a class are hidden while the box is ticked, and a line under the button says how many are waiting. The checkbox combines with Include and Exclude (all must match). The classes are shown in the column "Brand (Groq)" (0 or 1), which you can switch on or off in Column visibility and which is part of the export when it is ticked.
 
 To keep only the keywords of one particular brand, use Include (for example `bosch`); no classification is needed for that.
 
@@ -434,7 +435,7 @@ Status lines worth knowing: "Nothing to look up (all filtered rows already have 
 | Concepts need single-seed requests, so ideas rounds with Continuous running bring no concepts after round 1. | Keep Continuous off for the ideas service, or run "Get concepts" afterwards. |
 | One ideas request returns 1000 ideas at most (the first page). | Use several more specific seeds. |
 | Close variants share one volume. | Treat the figure as the group's volume. |
-| "Non-brand only" hides rows that were not classified yet, and brand classes are not exported. | Classify first, then tick the box. Classes are not in the file: export once with the box ticked and once without if you need the split. |
+| "Non-brand only" hides rows that were not classified yet. | Classify first, then tick the box. To get both groups in one file, export without the box and keep the column "Brand (Groq)" ticked. |
 | LLM classification is not perfect: split brand names, shops and publications. Questions can add a small assumption, and a noun may be written in lower case. | Review class 0 for your important brands. Keep questions as drafts, not as final copy. |
 | Groq's free plan limits per minute and per day. The server cannot see Groq's daily token limit, only its own counters. | Keep the batch sizes, filter before asking, and watch the status line ("requests today N/1000"). |
 | Keywords starting with `=`, `+`, `-` or `@` are exported as they are. A spreadsheet may read such a cell as a formula. | Import the CSV as text, or prefix those cells. |
@@ -453,7 +454,7 @@ Status lines worth knowing: "Nothing to look up (all filtered rows already have 
 - Classify brands before you generate questions. Then you can limit the questions to non-brand rows with "Non-brand only".
 - Let waits run. A blue or yellow live notice means the server is pacing or retrying. Do not reload the page during a run.
 - After a stop (limit, rate limit, error), read the box, wait as it says, and press the same button again. Nothing is lost and nothing is sent twice.
-- Keep the table until the export has been downloaded. Export with and without "Non-brand only" if you need both.
+- Keep the table until the export has been downloaded. Export without "Non-brand only" and keep the column "Brand (Groq)" if you need both groups.
 - Do not lower the rate limit of the suggest services, and do not run several tabs against the same Groq key (the second run gets 409).
 - Check quality by sampling: a few dozen question and brand rows are enough to see whether the settings work for your topic.
 - Restart the server after editing `.env`.

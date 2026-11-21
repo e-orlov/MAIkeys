@@ -143,3 +143,11 @@ The brand field and the three-state brand filter were replaced by one checkbox "
 
 Browser test with real Groq (93 keywords, one request): 41 class 0, 52 class 1; brand hits such as rossmann, wmf, smeg and bosch were class 1. Ticking the box showed only class 0 rows (44 of 108 in an earlier run), unticking showed all. A second run on the same rows differed in 5 of 93 keywords, all publications (Stiftung Warentest, Oekotest), a known inconsistency. The first version of the prompt, which reused the "(none)" wording of the old prompt, marked all 93 keywords as brands; that is why the dedicated prompt was added. The status line after a run threw an error because it still read the removed brand variable; fixed and re-tested. Mobile width 375 px: no horizontal scroll, help popover fits, a click on the "i" does not toggle the box.
 
+## Changes after the test: two brand columns in the table
+
+The two brand columns are back in the table and in Column visibility. "Concept types (Google)" (BRAND, OTHER_BRANDS, NON_BRAND, "-") shows up together with the other concept columns after "Get concepts". "Brand (Groq)" (0 no brand, 1 brand) shows up after "Classify brands" and is sortable. Both are part of the export when ticked; only the 48-month series stays export-only. The old export-only name "brand filter" is gone.
+
+Browser test with real Groq and Google Ads (93 keywords): after classification the column "Brand (Groq)" appeared by itself (36 class 0, 57 class 1) and the Column visibility menu listed both new columns. After concepts the column "Concept types (Google)" appeared with BRAND, OTHER_BRANDS, NON_BRAND and "-". The export columns were Keyword, Volume, CPC, Competition, the three concept columns, "Brand (Groq)" and the 48-month series (93 rows); with "Non-brand only" ticked the export had 36 rows, all with class 0.
+
+A defect found on the way: the CDN links in `public/index.html` began with `//`, which on `http://localhost` becomes `http://`. The DataTables CDN answers `http://` with a redirect that has no CORS header, so the browser blocked the script and the page stayed empty (no table, no results). All CDN links now start with `https://`.
+
