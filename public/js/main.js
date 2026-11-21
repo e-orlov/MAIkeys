@@ -17,6 +17,7 @@ var KWS = function(){
         progressActive: false,
         suggestRound: 1,
         continuing: false,
+        paused: false,
         round: 1,
         ideaRows: {},
 
@@ -41,8 +42,34 @@ var KWS = function(){
         toggleWork: function(){
             if (this.doWork === false)
                 this.StartWork();
-            else
+            else {
+                var unfinished = this.keywordsToQueryIndex < this.numOfInitialKeywords;
+                var total = this.keywordsToQuery.length, shown = this.options.maxQueueDisplay;
                 this.StopWork();
+                if (unfinished && total > shown) this.warnTruncatedQueue(total, shown);
+            }
+        },
+
+        warnTruncatedQueue: function(total, shown){
+            this.showAlert('warning', {
+                title: 'The queue is longer than the input box shows',
+                cause: 'The box shows only the first ' + shown + ' of ' + total + ' queue lines. "Start doing" builds a new queue from the text in the box, so the rest of the old queue would be lost, and every line without a mark would be expanded with all prefixes and suffixes again.',
+                duration: 'Not time-related.',
+                action: 'To continue the same run with the whole queue, use "Pause" and "Resume" instead of "Stop". To start over, press "Reset". Everything found so far stays in the table and can be exported.'
+            });
+        },
+
+        setPaused: function(on){
+            this.paused = !!on;
+            $('#pausejob').text(this.paused ? 'Resume' : 'Pause').attr('aria-pressed', this.paused ? 'true' : 'false').toggleClass('btn-warning', this.paused);
+            var inner = document.querySelector('.progressjs-inner');
+            if (inner) inner.classList.toggle('mai-paused', this.paused);
+            if (this.table) this.FilterAndDisplay();
+        },
+
+        togglePause: function(){
+            if (!this.doWork) return;
+            this.setPaused(!this.paused);
         },
 
         StartWork: function() {
@@ -55,6 +82,7 @@ var KWS = function(){
                 this.continuing = false;
                 this.saveSettings();
                 $('#startjob').val('Stop Job').text('Stop doing').addClass('btn-danger');
+                $('#pausejob').show();
                 this.hashMapInputs = {};
                 this.keywordsToQuery = [];
                 this.keywordsToQueryIndex = 0;
@@ -65,7 +93,7 @@ var KWS = function(){
 
                 this.options = this.getOptions();
 
-                var ks = $('#input').val().split("\n");
+                var ks = _.reject($('#input').val().split("\n"), function(l){ return l.trim() === '...'; });
                 this.keywordsToQuery=_.uniq(_.filter(_.map(ks,this.CleanVal), function(k){return k.trim().length;}));
                 this.lastSeed = this.keywordsToQuery[0] || null;
 
@@ -118,6 +146,8 @@ var KWS = function(){
             if (this.doWork){
                 $('#startjob').val('Start Job').text('Start doing').removeClass('btn-danger');
                 this.doWork = false;
+                this.setPaused(false);
+                $('#pausejob').hide();
                 this.table.draw();
                 this.table.columns.adjust();
                 this.saveSettings();
@@ -127,6 +157,7 @@ var KWS = function(){
         },
 
         DoJob: function() {
+            if (this.paused) return;
             if (this.doWork === true && this.ideasMode) return this.DoIdeasJob();
             if (this.doWork === true && this.queryLock === false) {
                 if (this.keywordsToQueryIndex < this.numOfInitialKeywords) {
@@ -168,7 +199,7 @@ var KWS = function(){
 
         ideaSeeds: function(){
             return _.filter(_.map($('#input').val().split('\n'), this.CleanVal), function(k){
-                return k.trim().length && k.slice(-1)!=='✓' && k.slice(-1)!=='❌';
+                return k.trim().length && k.trim() !== '...' && k.slice(-1)!=='✓' && k.slice(-1)!=='❌';
             });
         },
 
@@ -1103,6 +1134,7 @@ var KWS = function(){
             var roundInfo = (this.doWork && this.options && this.options.keepRunning && !this.ideasMode)
                 ? ' &middot; round ' + this.suggestRound + ', query ' + this.keywordsToQueryIndex + ' of ' + this.numOfInitialKeywords + ' in this round'
                 : '';
+            if (this.paused) roundInfo += roundInfo ? ' &middot; paused' : ' &middot; paused at query ' + this.keywordsToQueryIndex + ' of ' + this.numOfInitialKeywords;
             $("#numofkeywords").html('Queue:' + outputKeywords.length + roundInfo);
         },
 
@@ -1253,6 +1285,7 @@ var KWS = function(){
             this.progress1 = progressJs("#progress1");
 
             $('#startjob').on('click',this.toggleWork.bind(this));
+            $('#pausejob').on('click',this.togglePause.bind(this));
             $('#reset').on('click',this.reset.bind(this));
 
         var signedPct = function(d, type){

@@ -255,3 +255,5 @@ html body table#outtable.dataTable tbody td.mai-col-c { min-width: 200px; }
 @keyframes mai-slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(340%); } }
 .progressjs-inner.mai-indeterminate { width: 30% !important; transition: none !important; animation: mai-slide 1.6s linear infinite; }
 .progressjs-container > .progressjs-progress { overflow: hidden; }
+.progressjs-inner.mai-paused { animation-play-state: paused; opacity: .45; }
+.mai-cta .btn.btn-warning { background: transparent; border-color: var(--primary); color: var(--primary); }

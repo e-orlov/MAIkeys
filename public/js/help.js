@@ -6,6 +6,7 @@
                 '<p>"Do Keywords!" sends every seed to the chosen Service. For the suggest services each seed is also combined with every prefix and suffix from Advanced (prefix + seed, seed + suffix).</p>' +
                 '<p>With an empty box, the letters and question words from Prefixes and Suffixes are still expanded.</p>' +
                 '<p>While a job runs, the box shows the queue: a check mark means the query returned suggestions, a cross means it returned none.</p>' +
+                '<p>Use "Pause" and "Resume" to continue a run. "Stop doing" ends it, and "Start doing" afterwards builds a new queue from the text in this box (it shows at most 5000 lines).</p>' +
                 '<p>Service "google ads ideas": up to 20 seeds per request, prefixes and suffixes are not used.</p>'
         },
         'questions-model': {

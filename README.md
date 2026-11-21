@@ -103,6 +103,7 @@ The file `.env` sits next to `server.js` and is not committed. Values set in the
 |---|---|
 | Input (large text box) | One seed keyword per line. Blank lines and repeated seeds are dropped. While a job runs, the box shows the queue: every query with a mark (a check mark when it returned suggestions, a cross when it returned none) followed by the results. The label above it ("Queue: N") counts queries plus results. |
 | Do Keywords! / Stop doing | Starts the collection and becomes the stop button while it runs. With an empty input, the letters and question words are still expanded. |
+| Pause / Resume | Appears next to "Stop doing" while a collection runs. "Pause" freezes the run after the request that is on its way; the whole queue stays in memory, the label above the seeds says where it stopped, and the line under the header stops. "Resume" continues at the same place. It works for the suggest services and for "google ads ideas", with and without Continuous running. The paused run is lost when you reload the page. |
 | Advanced | Opens the settings panel (section below). |
 | Reset | Stops everything that is running, empties Input, the table, all status lines and the notice box, and ignores responses that are still on the way. Settings are kept. |
 | Get search volume | Looks up volume, CPC, competition, history and the change columns for the rows currently shown. Chapter 7.1. |
@@ -450,6 +451,7 @@ Status lines worth knowing: "Nothing to look up (all filtered rows already have 
 
 | Limitation | Workaround |
 |---|---|
+| "Start doing" after "Stop doing" does not continue the old run. It builds a new queue from the text in the input box: lines with a mark are treated as done, every line without a mark is queried and also expanded with all prefixes and suffixes. The box shows only the first 5000 queue lines, so a longer queue is cut at the stop (the page warns about this). | Use "Pause" and "Resume" to continue a run. Use "Stop doing" only when you are finished; the table keeps everything found, so export it. |
 | The rows are only in memory. Reload or closing the tab loses them. | Export before leaving. Column choices, filters and settings survive a reload. |
 | The same keyword can appear several times in the table and in exports (about 12 % of the rows in a real test). | Remove duplicates in the spreadsheet. Requests to Google and Groq already use unique keywords. |
 | Keywords with volume 0 (40 to 45 percent of the autosuggest results in the real tests) get no volume data and no concepts. | This is Keyword Planner's coverage. Use them as they are, or filter them out with the table sort. |
