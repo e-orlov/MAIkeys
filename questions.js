@@ -63,6 +63,23 @@ const BRAND_PROMPT = [
     'Use context to resolve ambiguous names.'
 ].join('\n');
 
+// Used when the page sends no brand (the normal case): any brand counts, only 0 and 1 are used.
+const BRAND_PROMPT_ANY = [
+    'Classify each SEO keyword by brand mentions.',
+    '',
+    'Return:',
+    '0 = No brand is mentioned. The keyword consists only of generic words (product types, features, materials, places, test or review words, numbers, years).',
+    '1 = At least one brand is mentioned (any company, product line, service, platform, shop, publication or commercial trademark).',
+    'Never answer 2.',
+    '',
+    'Recognize brands from all industries, including companies,',
+    'products, services, platforms, and commercial trademarks.',
+    '',
+    'Recognize aliases, common abbreviations and spelling variations.',
+    'Do not treat generic product terms as brands.',
+    'Use context to resolve ambiguous names.'
+].join('\n');
+
 const BRAND_BATCH_RULES = [
     '',
     'Batch mode: you receive a JSON array of objects {"id": number, "keyword": text}. Classify every keyword on its own.',
@@ -350,7 +367,7 @@ module.exports = function (env, rootDir) {
         try {
             var wantB = mode !== 'questions';
             var system = mode === 'questions' ? questionPrompt(languageName)
-                : BRAND_PROMPT.replace('{{BRAND}}', brand || '(none)') + '\n' + (brand ? '' : '(none) means that no brand is allowed: use only 0 and 1.\n') + BRAND_BATCH_RULES;
+                : (brand ? BRAND_PROMPT.replace('{{BRAND}}', brand) : BRAND_PROMPT_ANY) + '\n' + BRAND_BATCH_RULES;
             var task = { system: system, perItem: PER_ITEM_TOKENS[mode] };
             var maxBatch = mode === 'questions' ? c.batch : c.batchBrands;
             var lbKey = model + '|' + mode;

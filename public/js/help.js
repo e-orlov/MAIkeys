@@ -14,28 +14,19 @@
             html: '<p>The Groq model used by "Generate questions" and "Classify brands".</p>' +
                 '<p>The list comes from <code>GROQ_MODELS</code> in the <code>.env</code> file. The list is shown only when more than one model is configured.</p>'
         },
-        'brand-filter': {
-            title: 'Brand filter',
-            html: '<p>Shows only some of the rows, in the table and in every export. Three states:</p>' +
-                '<ul><li><b>All keywords</b>: everything (default).</li>' +
-                '<li><b>Non-brand only</b>: keywords with brand class 0 (no brand mentioned).</li>' +
-                '<li><b>Only brand: X</b>: keywords with class 2 (the brand typed in the Brand field is mentioned).</li></ul>' +
-                '<p>The classes come from "Classify brands". Keywords without a class are hidden in the two brand states, and a line under the filter says how many are waiting.</p>' +
-                '<p>The filter works together with Include, Exclude and the table search. The classes are not shown as a column and are not exported.</p>'
-        },
-        'brand-name': {
-            title: 'Brand',
-            html: '<p>The brand X for "Classify brands" and for the filter "Only brand: X". Up to 80 characters.</p>' +
-                '<ul><li><b>Class 2</b>: X is mentioned, alone or with other brands.</li>' +
-                '<li><b>Class 1</b>: other brands are mentioned, but not X.</li>' +
-                '<li><b>Class 0</b>: no brand is mentioned.</li></ul>' +
-                '<p>If you change the brand, run "Classify brands" again: keywords that were class 1 or 2 are asked again, class 0 stays valid. An empty field is allowed; then no keyword gets class 2.</p>'
+        'non-brand': {
+            title: 'Non-brand only',
+            html: '<p>When ticked, the table and every export show only keywords that mention no brand at all.</p>' +
+                '<p>The Groq model decides this when you press "Classify brands": it marks each keyword as "no brand" or "mentions a brand" (any brand, yours or a competitor). Keywords that are not classified yet are hidden while the box is ticked, and a line under the button says how many are waiting.</p>' +
+                '<p>The box works together with Include, Exclude and the table search. To keep only keywords with one particular brand, use Include instead. Include with a brand name plus this box shows almost nothing, because those keywords are brand keywords.</p>' +
+                '<p>"Classify brands" works only on the rows that pass Include and Exclude when you press it. For the whole table, clear Include and Exclude first, classify, and then set the filters.</p>'
         },
         'filter-positive': {
             title: 'Include',
             html: '<p>Keeps only keywords that contain at least one of these terms. One term per line. Not case-sensitive, the term may sit anywhere in the keyword.</p>' +
                 '<p>Applies to the table and to every export. Empty means no filter.</p>' +
-                '<p>Include does not shorten the query queue: a keyword that does not match can still lead to matching suggestions. To save requests use Exclude.</p>'
+                '<p>Include does not shorten the query queue: a keyword that does not match can still lead to matching suggestions. To save requests use Exclude.</p>' +
+                '<p>Include also limits "Classify brands" to the matching rows. Combined with "Non-brand only" and a brand name it shows almost nothing.</p>'
         },
         'filter-negative': {
             title: 'Exclude',
@@ -160,8 +151,6 @@
         var $label = $('label[for="' + id + '"]').first();
         if ($label.length) {
             $label.append($btn);
-        } else if (id === 'brand-name') {
-            $el.wrap('<span class="mai-fieldwrap"></span>').after($btn);
         } else {
             $el.after($btn);
         }

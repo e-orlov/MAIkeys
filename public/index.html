@@ -75,14 +75,10 @@
                     </div>
                     <div id="brand-box">
                         <div class="mai-brandbar">
-                            <label for="brand-filter">Brand filter</label>
-                            <select id="brand-filter" class="form-control">
-                                <option value="all">All keywords</option>
-                                <option value="nonbrand">Non-brand only</option>
-                                <option value="brand">Only brand: X</option>
-                            </select>
-                            <input type="text" id="brand-name" class="form-control" maxlength="80" autocomplete="off" spellcheck="false" aria-label="Brand" placeholder="Brand X">
-                            <button class="btn btn-primary btn-sm" id="getbrands" type="button" title="Ask the Groq model for the brand class of every keyword that passes include/exclude (0 no brand, 1 other brands only, 2 the brand named here). Single words are included. Needs GROQ_API_KEY in .env.">Classify brands</button>
+                            <button class="btn btn-primary btn-sm" id="getbrands" type="button" title="Ask the Groq model whether each keyword that passes include/exclude mentions a brand (any brand). Single words are included. Needs GROQ_API_KEY in .env.">Classify brands</button>
+                            <div class="checkbox">
+                                <label for="non-brand"><input type="checkbox" id="non-brand" name="non-brand">Non-brand only</label>
+                            </div>
                         </div>
                         <div id="brands-status" class="text-muted"></div>
                         <div id="brand-info" class="text-muted"></div>

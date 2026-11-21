@@ -112,10 +112,9 @@ html body select.form-control option { background: var(--card); color: var(--for
 .mai-toolbar select.form-control { width: auto; padding: 8px 36px 8px 14px; border-radius: 9999px; font-size: 14px; }
 #brand-box { margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(52, 83, 73, .4); }
 .mai-brandbar { display: grid; gap: 12px; }
-@media (min-width: 640px) { .mai-brandbar { grid-template-columns: auto 200px minmax(120px, 1fr) auto; align-items: center; } }
+@media (min-width: 640px) { .mai-brandbar { grid-template-columns: auto 1fr; align-items: center; justify-items: start; gap: 24px; } }
+.mai-brandbar .checkbox { margin: 0; }
 .mai-brandbar label { margin: 0; }
-.mai-brandbar .form-control { padding: 10px 14px; }
-#brand-name { width: 100% !important; }
 .mai-status { margin-top: 20px; display: grid; gap: 6px; font-size: 13px; color: var(--muted-foreground); }
 .mai-status > div:empty { display: none; }
 .mai-status > div { margin: 0 !important; }

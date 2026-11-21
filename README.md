@@ -6,8 +6,8 @@ MAIkeys grew out of [wassname/keywordshitter2](https://github.com/wassname/keywo
 
 - **A local Node server** (`server.js`, `questions.js`) with its own HTTP API. The Google Ads and Groq keys stay on the server and never reach the browser.
 - **Google Ads data.** Search volume, CPC, competition, 48 months of history and the change percentages for every keyword, the "google ads ideas" service that expands seeds in rounds, and Google's keyword concepts.
-- **Groq language model.** Questions in any of 37 languages, chosen in Advanced, and a brand classification with a three-state brand filter.
-- **One table you can work with.** Include and Exclude filters, the brand filter, column choice, sorting, and a CSV export of exactly the rows you see, with the file name `<seed>-<time stamp>.csv`.
+- **Groq language model.** Questions in any of 37 languages, chosen in Advanced, and a brand classification with a "Non-brand only" checkbox.
+- **One table you can work with.** Include and Exclude filters, the "Non-brand only" checkbox, column choice, sorting, and a CSV export of exactly the rows you see, with the file name `<seed>-<time stamp>.csv`.
 - **Notices for every failure.** Missing keys, quotas, rate limits, network and server problems each show a box with the cause, the expected duration and what to do next.
 - **A new interface.** A dark theme after the design of mai.mediaworx.com, an "i" help text for every field, and a progress line that also makes sense with Continuous running.
 - **German defaults.** Country `de`, language `de`, and German prefixes and suffixes.
@@ -110,18 +110,18 @@ The file `.env` sits next to `server.js` and is not committed. Values set in the
 | Get concepts | Looks up Google keyword concepts for the rows currently shown. Chapter 7.3. While it runs the button says "Stop concepts". |
 | Generate questions | Turns the shown keywords into questions in the language chosen in Advanced under Language. Chapter 8.1. While it runs the button says "Stop generating". |
 | Model picker | Groq model for questions and brand classes. Hidden when only one model is configured. |
-| Brand filter, brand field, Classify brands | The brand feature. Chapter 8.2. While it runs the button says "Stop classifying". |
+| Classify brands, Non-brand only | The brand feature. Chapter 8.2. While it runs the button says "Stop classifying". The checkbox shows only keywords without a brand. |
 | Notice box | The coloured box under the buttons that explains problems and waits. Chapter 11. |
 | Status lines | Short grey lines for volume, concepts, questions and brands. |
 | Errors box (collapsed) | Appears after the first Groq problem. Lists every Groq error of the session. "Copy log" copies it. The same lines go to `logs/questions-errors.log`. |
 
 ### Help icons
 
-Next to every field of Input and Advanced there is a small round "i" icon: Seeds, the model picker (when it is shown), Brand filter, Brand, Include, Exclude, Concepts max requests, Service, Prefixes, Suffixes, Continuous running, the three "Ads ideas" fields (shown with the service "google ads ideas"), Country and Language. A click opens a short help text in English next to the icon: what the field does, the input format, the default and the pitfalls. A second click on the icon, a click anywhere else or the Escape key closes it. The texts are Bootstrap popovers and live in `public/js/help.js`, one entry per field, so they are easy to edit. The buttons and the table controls have no icon.
+Next to every field of Input and Advanced there is a small round "i" icon: Seeds, the model picker (when it is shown), Non-brand only, Include, Exclude, Concepts max requests, Service, Prefixes, Suffixes, Continuous running, the three "Ads ideas" fields (shown with the service "google ads ideas"), Country and Language. A click opens a short help text in English next to the icon: what the field does, the input format, the default and the pitfalls. A second click on the icon, a click anywhere else or the Escape key closes it. The texts are Bootstrap popovers and live in `public/js/help.js`, one entry per field, so they are easy to edit. The buttons and the table controls have no icon.
 
 The header has links to Input, Results and About (the About text sits in the footer at the bottom of the page), and an Export button that jumps to the table and opens the export menu. It stays at the top while you scroll, and the thin lime line under it is the progress bar of a running collection. It fills from left to right during a normal run. With "Continuous running" on, the total is unknown (every round adds new queries), so the line slides back and forth instead, and the label above the seeds shows the round and the position in it ("Queue:1525 · round 2, query 17 of 1525 in this round").
 
-The "Get ..." and "Generate ..." buttons work on the rows that are shown after Include/Exclude, the brand filter and the search box. "Classify brands" uses Include/Exclude only (chapter 8.2).
+The "Get ..." and "Generate ..." buttons work on the rows that are shown after Include/Exclude, the "Non-brand only" checkbox and the search box. "Classify brands" uses Include/Exclude only (chapter 8.2).
 
 ### Advanced settings
 
@@ -170,7 +170,7 @@ For each seed the queue is: the seed itself, then every prefix followed by the s
 
 ### Settings that are remembered
 
-The browser keeps these in its local storage and restores them after a reload: service, country, language, prefixes, suffixes, Include, Exclude, Continuous running, the ideas fields, the concepts limit, brand name, brand filter state, and the table's column choices, sort order and search. The rows themselves are not stored. A reload empties the table, so export first.
+The browser keeps these in its local storage and restores them after a reload: service, country, language, prefixes, suffixes, Include, Exclude, Continuous running, the ideas fields, the concepts limit, the "Non-brand only" checkbox, and the table's column choices, sort order and search. The rows themselves are not stored. A reload empties the table, so export first.
 
 ## 4. The results table
 
@@ -210,42 +210,18 @@ A wide table scrolls horizontally inside its card, on a narrow window too. Every
 
 Advanced, one term per line, case-insensitive substring match. Include keeps only keywords that contain at least one term. Exclude drops keywords that contain a term. Both apply to the table and to every export. Excluded keywords are also never queried or expanded further. Include does not shorten the query queue (a keyword that does not match can still lead to matching suggestions).
 
-### 5.2 Brand filter
+### 5.2 Non-brand only
 
-Three states, next to the buttons:
+A checkbox next to "Classify brands". When it is ticked, the table and every export show only keywords with brand class 0 (no brand mentioned). When it is not ticked, everything is shown (default).
 
-| State | Shows |
-|---|---|
-| All keywords | Everything (default). |
-| Non-brand only | Keywords with brand class 0. |
-| Only brand: X | Keywords with brand class 2 for the brand typed in the brand field. |
+The classes come from "Classify brands" (chapter 8.2). Keywords without a class are hidden while the box is ticked, and a line under the button says how many are waiting. The checkbox combines with Include and Exclude (all must match). The classes are not shown as a column and are not exported. They only decide which rows are shown and exported.
 
-The classes come from "Classify brands" (chapter 8.2). Keywords without a class are hidden in the two brand states, and a line under the filter says how many are waiting. The filter combines with Include and Exclude (all must match). The classes are not shown as a column and are not exported. They only decide which rows are shown and exported.
+To keep only the keywords of one particular brand, use Include (for example `bosch`); no classification is needed for that.
 
-## 6. Export
+Two things to know about the combination with Include:
 
-Button Export in the table toolbar:
-
-| Item | Result |
-|---|---|
-| Copy | Copies the table to the clipboard as text. |
-| CSV | Downloads a CSV file. |
-| Copy keywords | Downloads a CSV with the Keyword column only, no header. |
-| Copy visible columns | Downloads a CSV with the ticked columns, no header, no series column. |
-
-(The last two also download a file despite their names.)
-
-What an export contains:
-
-- Only the rows that are shown: Include/Exclude, the brand filter and the Search box apply, in the current sort order, all pages.
-- Every column ticked in Column visibility, in table order, followed by the export-only columns "brand filter" and the 48-month series. They are included even though they cannot be ticked.
-- New lines inside a cell become spaces. HTML entities are decoded. Growth values carry a plus sign.
-
-File name: `<seed>-<yyyymmddHHmmss>.csv`. The seed is the first seed keyword of the last run (the first line of Input if no run has happened), lower case, with `ä ö ü ß` written as `ae oe ue ss` and everything else that is not a letter or digit turned into `-`, cut to 60 characters. Without a seed the name starts with `keywords`.
-
-## 7. Google Ads features
-
-All of them go through the local server, so the credentials never reach the browser.
+- **Include plus "Non-brand only" gives (almost) no rows when Include names a brand.** Include `bosch` keeps keywords with "bosch", the checkbox keeps keywords the model found brand-free, and the model marks "bosch ..." as class 1. Only keywords where the model missed the brand (for example a brand written with a space, such as "v zug") stay visible, so this combination works as a check for misses.
+- **Classify first, filter afterwards.** "Classify brands" works only on the rows that pass Include and Exclude at that moment. Rows outside the filter get no class and stay hidden while the box is ticked. For a "non-brand" export of the whole table, clear Include and Exclude, run "Classify brands", and only then set the filters and tick the box.
 
 ### 7.1 Search volume ("Get search volume")
 
@@ -294,31 +270,30 @@ Both features use the same server-side client (the official `groq-sdk`, no hidde
 
 Turns each keyword of two or more words into one natural question in the language set under Language in Advanced (German by default). The instruction is an English prompt built in `questions.js` (`questionPrompt`). The page sends the chosen language code with the request, the server turns it into the language name (for example `fr` into French) and puts that name into the prompt. The prompt says in capital letters that it is written in English but that every question MUST be written in the chosen language, and it repeats this at the end. Real tests with German keywords gave German, English, French and Russian questions for the settings `de`, `en`, `fr` and `ru`. If a keyword is in another language than the setting, the question is still written in the chosen language and brand names stay unchanged. With the language field empty (or without `lang` in an API call) the question is written in the language of the keyword. The prompt is applied to every keyword on its own. A keyword that already is a question is returned unchanged. Single words are skipped (not an error). Keywords longer than 300 characters are skipped and reported.
 
-The button works on the shown rows (after Include/Exclude, brand filter and search box) that have no question yet. The result goes to the Question column and into exports.
+The button works on the shown rows (after Include/Exclude, "Non-brand only" and search box) that have no question yet. The result goes to the Question column and into exports.
 
 Measured cost: about 45 tokens per keyword in total (prompt, answer and reasoning), one request per 80 keywords by default.
 
 ### 8.2 Brand classes ("Classify brands")
 
-You type the brand X in the brand field and click "Classify brands". Every keyword gets a class:
+Click "Classify brands". Every keyword gets a class:
 
 | Class | Meaning |
 |---|---|
 | 0 | No brand is mentioned. |
-| 1 | One or more brands are mentioned, but X is not among them. |
-| 2 | X is mentioned, alone or with other brands. |
+| 1 | One or more brands are mentioned (any brand, yours or a competitor). |
 
-The instruction is your classification prompt, verbatim, with X filled in (`BRAND_PROMPT` in `questions.js`). Only its output lines were adapted for batches: the keywords go in with IDs and the model answers `{"items":[{"id":1,"brand":0}, ...]}`. Brands from all industries count, including aliases, abbreviations and spelling variations. Generic product terms do not.
+The instruction is the any-brand classification prompt (`BRAND_PROMPT_ANY` in `questions.js`), so the model uses only 0 and 1. The older prompt with a named brand (`BRAND_PROMPT`, class 2) is still in the code for API callers that send `brand`. Only its output lines were adapted for batches: the keywords go in with IDs and the model answers `{"items":[{"id":1,"brand":0}, ...]}`. Brands from all industries count, including aliases, abbreviations and spelling variations. Generic product terms do not.
 
 Behaviour:
 
-- "Classify brands" takes every row that passes Include/Exclude, single words included ("tchibo" is the typical brand query). It ignores the brand filter itself, because otherwise unclassified rows could never be reached.
-- A class is stored per row together with the brand it was computed for. If you change the brand, only the rows with class 1 or 2 are asked again, because class 0 is valid for any brand. The same brand with other capitalisation or spacing changes nothing.
-- An empty brand field is allowed. The server then sends "(none)" and no row gets class 2.
+- "Classify brands" takes every row that passes Include/Exclude at the moment you click, single words included ("tchibo" is the typical brand query). Rows that the filters hide get no class and stay hidden when "Non-brand only" is ticked, so classify before you set Include/Exclude. The button ignores the checkbox itself, because otherwise unclassified rows could never be reached.
+- A class is stored per row and stays valid for the whole session. Rows that already have a class are not asked again.
 - Brand classes are a separate request from questions on purpose. In a test with 104 labelled keywords the separate request was right 99.0 % of the time in both runs. A combined questions-plus-brands request was right only 98.1 % and 95.2 % of the time and missed brands such as PlayStation, Xbox and Windows. That is why the combined mode was removed.
 - Measured cost: about 50 tokens per keyword (prompt, answer and reasoning), one request per 150 keywords by default.
+- The API still accepts an optional `brand` (chapter 11); the page does not send it.
 
-Typical quality (real tests with about 550 classified keywords): class 2 was always correct. Misses were brand names split by a space ("v zug", "k fee", "l or"), and the treatment of shops (dm, aldi, media markt, amazon) and publications (Stiftung Warentest, Chip) is not consistent between runs. Check the class 0 list of an important keyword set by eye.
+Typical quality (real tests with about 550 classified keywords, earlier version with a named brand): brand hits were always correct. Misses were brand names split by a space ("v zug", "k fee", "l or"), and the treatment of shops (dm, aldi, media markt, amazon) and publications (Stiftung Warentest, Chip) is not consistent between runs. Check the class 0 list of an important keyword set by eye.
 
 ### 8.3 How the server makes the answers reliable
 
@@ -342,7 +317,7 @@ While the server waits (pacing or retry), the page polls the status every two se
 3. Include/Exclude: drop what you do not need, so that the next steps cost less.
 4. Get search volume.
 5. Optional: Get concepts (expect partial coverage).
-6. Optional: type the brand, Classify brands, set the brand filter, Generate questions for the rows you keep.
+6. Optional: Classify brands, tick "Non-brand only", Generate questions for the rows you keep.
 7. Export.
 
 ### B. Complete data for one topic
@@ -356,7 +331,7 @@ While the server waits (pacing or retry), the page polls the status every two se
 
 Run B first, then A with a related seed. The table then holds Google's idea keywords with full data and the long tail from suggestions. Press Get concepts to fill in what is possible for the long tail.
 
-Spend LLM requests last, after Include/Exclude and the brand filter have reduced the table. Brand classes first, then questions only for the rows you keep.
+Spend LLM requests last, after Include/Exclude and "Non-brand only" have reduced the table. Brand classes first, then questions only for the rows you keep.
 
 ## 10. HTTP API reference
 
@@ -459,7 +434,7 @@ Status lines worth knowing: "Nothing to look up (all filtered rows already have 
 | Concepts need single-seed requests, so ideas rounds with Continuous running bring no concepts after round 1. | Keep Continuous off for the ideas service, or run "Get concepts" afterwards. |
 | One ideas request returns 1000 ideas at most (the first page). | Use several more specific seeds. |
 | Close variants share one volume. | Treat the figure as the group's volume. |
-| The brand filter hides rows that were not classified yet, and brand classes are not exported. | Classify first, then filter. Classes are not in the file: export the three states separately if you need the split. |
+| "Non-brand only" hides rows that were not classified yet, and brand classes are not exported. | Classify first, then tick the box. Classes are not in the file: export once with the box ticked and once without if you need the split. |
 | LLM classification is not perfect: split brand names, shops and publications. Questions can add a small assumption, and a noun may be written in lower case. | Review class 0 for your important brands. Keep questions as drafts, not as final copy. |
 | Groq's free plan limits per minute and per day. The server cannot see Groq's daily token limit, only its own counters. | Keep the batch sizes, filter before asking, and watch the status line ("requests today N/1000"). |
 | Keywords starting with `=`, `+`, `-` or `@` are exported as they are. A spreadsheet may read such a cell as a formula. | Import the CSV as text, or prefix those cells. |
@@ -475,10 +450,10 @@ Status lines worth knowing: "Nothing to look up (all filtered rows already have 
 - Check the setup once: open `/api/volume/check` and watch the status of the two features (the page tells you about a missing key at the first click).
 - Start small. Run a short seed first, look at the table, and only then spend Google and Groq requests.
 - Narrow the table before you spend LLM requests: Include/Exclude first, then volume, then brand classes, then questions for the rows you keep.
-- Classify brands before you generate questions. Then you can limit the questions to non-brand or brand rows with the brand filter.
+- Classify brands before you generate questions. Then you can limit the questions to non-brand rows with "Non-brand only".
 - Let waits run. A blue or yellow live notice means the server is pacing or retrying. Do not reload the page during a run.
 - After a stop (limit, rate limit, error), read the box, wait as it says, and press the same button again. Nothing is lost and nothing is sent twice.
-- Keep the table until the export has been downloaded. Export all three brand states if you need them.
+- Keep the table until the export has been downloaded. Export with and without "Non-brand only" if you need both.
 - Do not lower the rate limit of the suggest services, and do not run several tabs against the same Groq key (the second run gets 409).
 - Check quality by sampling: a few dozen question and brand rows are enough to see whether the settings work for your topic.
 - Restart the server after editing `.env`.

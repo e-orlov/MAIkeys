@@ -362,7 +362,6 @@ var KWS = function(){
                     question: null,
                     trend: null,
                     brand: null,
-                    brandFor: null,
                     concepts: null,
                     conceptNames: null,
                     conceptGroups: null,
@@ -757,7 +756,6 @@ var KWS = function(){
                 if (this.runKind === kind) { this.questionsStop = true; $st.text('Stopping after the current request...'); }
                 return;
             }
-            var brand = this.currentBrand();
             var rows = kind === 'brands'
                 ? _.filter(this.table.rows().data().toArray(), function(r){ return self.passesFilter(r.keyword); })
                 : this.table.rows({search: 'applied'}).data().toArray();
@@ -795,7 +793,7 @@ var KWS = function(){
                     var done = kind === 'brands' ? st.b : st.q;
                     var result = kind === 'brands' ? st.b + ' of ' + total + ' classified' : st.q + ' of ' + total + ' generated';
                     $st.text((st.fatal ? 'Stopped - see the notice below. ' : (self.questionsStop ? 'Stopped by you. ' : '')) +
-                        what + ' (' + model + (kind === 'brands' ? ', brand "' + (brand || '(none)') + '"' : '') + '): ' + result + ', ' + st.failed + (st.fatal ? ' not processed' : ' failed') +
+                        what + ' (' + model + '): ' + result + ', ' + st.failed + (st.fatal ? ' not processed' : ' failed') +
                         ' (' + st.requests + ' requests; tokens in/out/reasoning: ' + st.pin + '/' + st.pout + '/' + st.preason +
                         '; requests today ' + st.today + '/' + st.limit + ').');
                     self.updateBrandInfo();
@@ -832,7 +830,6 @@ var KWS = function(){
                     $st.text((kind === 'brands' ? 'Classifying brands... ' : 'Generating questions... ') + st.sent + '/' + total +
                         ' (sending ' + job.keys.length + ' keywords, this can take a few minutes)');
                     var payload = {keywords: job.keys, model: model, mode: job.mode, lang: $('#lang').val() || ''};
-                    if (job.mode !== 'questions') payload.brand = brand;
                     $.ajax({
                         url: 'api/questions',
                         method: 'POST',
@@ -841,7 +838,7 @@ var KWS = function(){
                     }).done(function(res){
                         if (gen !== self.generation) return;
                         if (res.questions) { self.applyQuestions(res.questions); st.q += _.size(res.questions); }
-                        if (res.brands) { self.applyBrands(res.brands, brand); st.b += _.size(res.brands); }
+                        if (res.brands) { self.applyBrands(res.brands); st.b += _.size(res.brands); }
                         st.sent += job.keys.length;
                         st.failed += res.failed.length;
                         st.skipped += (res.skipped && ((res.skipped.tooLong || 0) + (res.skipped.invalid || 0))) || 0;
@@ -871,55 +868,45 @@ var KWS = function(){
             });
         },
 
-        brandFilter: 'all',
+        nonBrandOnly: false,
 
-        brandKey: function(b){ return String(b || '').trim().replace(/\s+/g, ' ').toLowerCase(); },
-        currentBrand: function(){ return String($('#brand-name').val() || '').trim().replace(/\s+/g, ' '); },
         needsQuestion: function(d){ return (d.question === null || d.question === undefined) && d.words >= 2; },
-        needsBrand: function(d){
-            return d.brand === null || d.brand === undefined || (d.brand !== 0 && d.brandFor !== this.brandKey(this.currentBrand()));
-        },
+        needsBrand: function(d){ return d.brand === null || d.brand === undefined; },
         passesBrand: function(d){
-            if (this.brandFilter === 'all' || !d) return true;
-            if (this.brandFilter === 'nonbrand') return d.brand === 0;
-            return d.brand === 2 && d.brandFor === this.brandKey(this.currentBrand());
+            if (!this.nonBrandOnly || !d) return true;
+            return d.brand === 0;
         },
 
-        applyBrands: function(map, brand){
-            var self = this, any = false, bk = this.brandKey(brand);
+        applyBrands: function(map){
+            var self = this, any = false;
             this.table.rows().every(function(){
                 var d = this.data();
                 var key = self.qKey(d.keyword);
-                if (_.has(map, key)) { d.brand = map[key]; d.brandFor = bk; this.data(d); any = true; }
+                if (_.has(map, key)) { d.brand = map[key]; this.data(d); any = true; }
             });
             if (any) this.table.draw(false);
         },
 
-        setBrandFilter: function(value){
-            this.brandFilter = _.includes(['all', 'nonbrand', 'brand'], value) ? value : 'all';
-            $('#brand-filter').val(this.brandFilter);
-            localStorage.brandFilter = this.brandFilter;
+        setNonBrandOnly: function(on){
+            this.nonBrandOnly = !!on;
+            $('#non-brand').prop('checked', this.nonBrandOnly);
+            localStorage.nonBrandOnly = this.nonBrandOnly;
             if (this.table) this.table.draw();
         },
 
         updateBrandInfo: function(){
             if (!this.table) return;
-            var self = this, cur = this.currentBrand();
-            $('#brand-filter option[value="brand"]').text('Only brand: ' + (cur || 'X'));
-            var tot = 0, wait = 0, stale = 0, shown = 0;
+            var self = this, wait = 0, tot = 0;
             _.each(this.table.rows().data().toArray(), function(d){
                 if (!self.passesFilter(d.keyword)) return;
                 tot++;
-                if (d.brand === null || d.brand === undefined) wait++;
-                else if (self.needsBrand(d)) stale++;
+                if (self.needsBrand(d)) wait++;
             });
             var $i = $('#brand-info');
             if (!tot) { $i.text(''); return; }
             var parts = [];
             if (wait) parts.push(wait + ' not classified');
-            if (stale) parts.push(stale + ' classified for another brand');
-            if (this.brandFilter !== 'all' && (wait || stale)) parts.push('hidden by the filter until classified');
-            if (this.brandFilter === 'brand' && !cur) parts.push('enter a brand name');
+            if (this.nonBrandOnly && wait) parts.push('hidden by the filter until classified');
             $i.text(parts.length ? 'Brand filter: ' + parts.join('; ') + '.' : '');
         },
 
@@ -1211,9 +1198,8 @@ var KWS = function(){
             if (localStorage.ideasMaxKeywords) $('#ideas-max-keywords').val(localStorage.ideasMaxKeywords);
             if (localStorage.ideasMinVolume) $('#ideas-min-volume').val(localStorage.ideasMinVolume);
             if (localStorage.keepRunning) $('#keep-running').prop('checked',localStorage.keepRunning=="true");
-            if (localStorage.brandName) $('#brand-name').val(localStorage.brandName);
             if (localStorage.conceptsMaxRequests) $('#concepts-max-requests').val(localStorage.conceptsMaxRequests);
-            if (localStorage.brandFilter) this.brandFilter = localStorage.brandFilter;
+            this.nonBrandOnly = localStorage.nonBrandOnly === 'true' || localStorage.brandFilter === 'nonbrand';
 
         },
         saveSettings: function(){
@@ -1230,8 +1216,7 @@ var KWS = function(){
             localStorage.ideasMaxRounds = $('#ideas-max-rounds').val();
             localStorage.ideasMaxKeywords = $('#ideas-max-keywords').val();
             localStorage.ideasMinVolume = $('#ideas-min-volume').val();
-            localStorage.brandName = $('#brand-name').val();
-            localStorage.brandFilter = this.brandFilter;
+            localStorage.nonBrandOnly = this.nonBrandOnly;
             localStorage.conceptsMaxRequests = $('#concepts-max-requests').val();
         },
 
@@ -1516,12 +1501,7 @@ var KWS = function(){
                     $('.dt-buttons .buttons-collection').filter(function(){ return $(this).text().trim() === 'Export'; }).first().trigger('click');
                 }, 350);
             });
-            $('#brand-filter').on('change', function(){ self.setBrandFilter($(this).val()); self.updateBrandInfo(); });
-            $('#brand-name').on('input', _.debounce(function(){
-                localStorage.brandName = $('#brand-name').val();
-                self.updateBrandInfo();
-                if (self.brandFilter === 'brand') self.table.draw();
-            }, 250));
+            $('#non-brand').on('change', function(){ self.setNonBrandOnly($(this).prop('checked')); self.updateBrandInfo(); });
             $('#outtable').on('draw.dt', _.debounce(function(){ self.updateBrandInfo(); }, 100));
             $.getJSON('api/questions/status').done(function(cfg){
                 var $m = $('#questions-model').empty();
@@ -1537,7 +1517,7 @@ var KWS = function(){
             $('#service').on('change', toggleIdeas);
             toggleIdeas();
             this.updateFilters();
-            this.setBrandFilter(this.brandFilter);
+            this.setNonBrandOnly(this.nonBrandOnly);
             this.updateBrandInfo();
 
             $.getJSON('https://api.ipify.org?format=json', function (data) {
