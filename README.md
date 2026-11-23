@@ -36,11 +36,20 @@ MAIkeys grew out of [wassname/keywordshitter2](https://github.com/wassname/keywo
 
 You need Node.js 18 or newer (the server uses the built-in `fetch`; `package.json` says so in `engines`).
 
+**Run every command below in a terminal that is open in the project folder**, the folder that contains `package.json` and `server.js`. A command run anywhere else fails (`npm` reports that it cannot find `package.json`).
+
+How to open a terminal there:
+
+- Windows: open the project folder in File Explorer, click the address bar, type `powershell` and press Enter. Or open PowerShell and run `cd` with the path of the folder.
+- macOS and Linux: open a terminal and run `cd` with the path of the folder.
+
 ```bash
 npm install
 cp .env.example .env     # then edit .env, see chapter 2
 npm start
 ```
+
+`npm install` is needed once, after you have downloaded the project. `cp .env.example .env` is for the first setup only: it creates `.env` from the template, and it overwrites an existing `.env` without asking, so do not run it again once your keys are in the file. `npm start` starts the server and must be run every time you want to use the tool. Keep the terminal window open while you work. Ctrl+C stops the server.
 
 Open http://127.0.0.1:3000/ in a browser. Do not open `public/index.html` as a file: the page needs the server for volume, ideas, concepts, questions and brand classes, and the notice box will tell you "The MAIkeys server is not reachable".
 
